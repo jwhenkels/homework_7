@@ -1,0 +1,101 @@
+---
+title: "STAT 613 - Homework 7"
+author: "Jacob Henkels"
+date: "3/21/2021"
+output:
+  word_document: default
+  html_document:
+    df_print: paged
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, echo = FALSE, results = 'hide'}
+library(rvest)
+library(dplyr)
+library(tidyverse)
+library(repurrrsive)
+library(purrr)
+```
+
+# 1. 
+
+```{r}
+Link <- "https://www.imdb.com/list/ls091520106/"
+page = read_html(Link)
+Title = page%>% html_nodes(".lister-item-header a")%>%
+html_text()
+Title
+```
+
+```{r}
+Ratings = page%>% html_nodes(".ipl-rating-star.small .ipl-rating-star__rating")%>%
+html_text()
+Ratings
+```
+
+```{r}
+Runtime = page%>% html_nodes(".runtime")%>%
+html_text()
+Runtime
+```
+
+```{r}
+movieDF = data.frame(Title, Ratings, Runtime)
+movieDF
+```
+
+
+\pagebreak
+# 2. 
+### A. Explain or describe nested Lists.  (Three or four sentences)
+
+A nested list essentially boils down to a list within a list. For instance, a list may represent a group of people, and includes nested lists with information like their favorite movies. These can occur when the data includes matrices of information. 
+
+### B. Open and explore data for Git Hub repos by running the following code gh_repo.  Comment on the structure and arrangement of the data (Two or three sentences)
+
+```{r, results = 'hide'}
+gh_repos
+#Hid results since it was very long
+```
+
+By running 'gh_repo', we get a long dataset with multi-level lists (nested). The list contains github users and nested lists for the repositories and info on them.
+
+
+### C. In two or three sentences, explain what happens to the data when you run the code;
+
+```{r}
+repos <- tibble(repo = gh_repos)
+repos
+```
+
+Using the code above produces a tibble of the 6 Github users. We can also see that for each Github user, there are 30 lists nested inside of that list.
+
+### D. Describe the data representation when the listserver tool is applied. And go into detail explaining why we have a nested List configuration. What do the numbers 30 and 68 represent ? (6 or 7 sentences)
+
+```{r echo = T, results = 'hide'}
+listviewer::jsonedit(gh_repos)
+#Hid results so that I could knit to .docx
+```
+
+By using the listserver tool, we are able to get lists & nested lists. It begins with an array of 6, each representing a Github user. There are 30 nested lists that represent a Github user's repositories. Within those repositories, there appears to be 68 fields of info on each repository, including things like login data. They also include information like urls, descriptions, and when they were created. Overall, with this code, we are able to dive into gh_repos and observe the nested lists inside, including 6 users, 30 repositories, and 68 rows of info about each repository. 
+
+### E. Use and show R unesting code to produce the tibble below.
+
+```{r}
+tibble(repo = gh_repos) %>%
+  unnest_auto(repo) %>%
+  unnest_auto(repo)
+```
+
+
+
+
+
+
+
+
+
